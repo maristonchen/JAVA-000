@@ -74,4 +74,5 @@ CommandLine flags: -XX:InitialHeapSize=266296832 -XX:MaxHeapSize=1073741824 -XX:
 + -XX:+UseParallelGC 并行垃圾回收器，吞吐量优先
 
 **总 结(Parallel Scavenge+Parallel Old)**
-+ 1秒钟内发生了25次年轻代GC、5次Full GC；最后Full GC也无法回收Eden区内存，直接报OOM异常 
++ 1秒钟内发生了25次年轻代GC(总共耗时250毫秒左右，平均耗时10毫秒左右)、5次Full GC(总共耗时180毫秒左右，平均耗时36毫秒左右)
++ 1秒钟内GC耗时占总时间的43%左右，也就是说40%左右的时间应用是属于STW状态

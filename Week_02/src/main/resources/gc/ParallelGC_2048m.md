@@ -58,5 +58,5 @@ CommandLine flags: -XX:InitialHeapSize=266296832 -XX:MaxHeapSize=2147483648 -XX:
 + -XX:+UseParallelGC 并行垃圾回收器，吞吐量优先
 
 **总 结(Parallel Scavenge+Parallel Old)**
-+ 1秒钟内发生了12次年轻代GC(总共耗时304毫秒，平均每次耗时25毫秒)、3次Full GC
-+ 1秒内12
++ 1秒钟内发生了12次年轻代GC(总共耗时304毫秒，平均耗时25毫秒)、3次Full GC(总共耗时108毫秒，平均耗时36毫秒)
++ 1秒钟内GC耗时占总时间的41.2%，也就是说40%左右的时间应用是属于STW状态
