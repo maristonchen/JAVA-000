@@ -177,10 +177,15 @@
 
 **JVM环境**
  ```cmd
-CommandLine flags: -XX:InitialHeapSize=266296832 -XX:MaxHeapSize=4260749312 -XX:+PrintGC -XX:+PrintGCDateStamps -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:-UseLargePagesIndividualAllocation -XX:+UseParallelGC
+CommandLine flags: -XX:InitialHeapSize=134217728 -XX:MaxHeapSize=134217728 -XX:MaxNewSize=44740608 -XX:MaxTenuringThreshold=6 -XX:NewSize=44740608 -XX:OldPLABSize=16 -XX:OldSize=89477120 -XX:+PrintGC -XX:+PrintGCDateStamps -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:+UseConcMarkSweepGC -XX:-UseLargePagesIndividualAllocation -XX:+UseParNewGC
 ```
-+ -XX:InitialHeapSize=266296832 初始堆大小:254M(266296832/(1024*1024))
-+ -XX:MaxHeapSize=4260749312 最大堆大小:4063M(4260749312/(1024*1024))
++ -XX:InitialHeapSize=134217728 初始堆大小:128M(134217728/(1024*1024))
++ -XX:MaxHeapSize=134217728 最大堆大小:128M(134217728/(1024*1024))
++ -XX:NewSize=44740608  年轻代初始大小：42.67M(44740608/(1024*1024))
++ -XX:MaxNewSize=44740608 年轻代最大大小：42.67M(44740608/(1024*1024)) => 堆大小的1/3
++ -XX:MaxTenuringThreshold=6 该参数主要是控制新生代需要经历多少次GC晋升到老年代中的最大阈值（在JVM中用4个bit存储（放在对象头中），所以其最大值是15）
++ -XX:OldPLABSize=16  => Size of old gen promotion labs (in HeapWords)
++ -XX:OldSize=89477120 老年代初始化大小：85.33M(89477120/(1024*1024)) => 堆大小的2/3
 + -XX:+PrintGC 打印GC信息
 + -XX:+PrintGCDateStamps 打印GC发生时的日期信息
 + -XX:+PrintGCDetails 打印详细的GC信息
@@ -188,32 +193,27 @@ CommandLine flags: -XX:InitialHeapSize=266296832 -XX:MaxHeapSize=4260749312 -XX:
 + -XX:+UseCompressedClassPointers 压缩类指针
 + -XX:+UseCompressedOops 压缩普通对象指针，从32位的虚拟机上迁移到64位的虚拟机上，会对指针进行相应的压缩处理
 + -XX:-UseLargePagesIndividualAllocation 使用大页面个体分配
-+ -XX:+UseParallelGC 并行垃圾回收器，吞吐量优先
++ -XX:+UseConcMarkSweepGC CMS垃圾收集器 ，并发mark-sweep(标记清除)，没有明显的STW
++ -XX:+UseParNewGC 年轻代并行垃圾收集器，并行STW方式的mark-copy(标记复制)算法
 
 **年轻代GC(Minor GC)**
 ```cmd
-2020-10-27T17:18:16.798+0800: 0.144: [GC (Allocation Failure) [PSYoungGen: 65024K->10750K(75776K)] 65024K->22522K(249344K), 0.0050200 secs] [Times: user=0.00 sys=0.09, real=0.00 secs]
+2020-10-29T15:20:13.285+0800: 0.130: [GC (Allocation Failure) 2020-10-29T15:20:13.285+0800: 0.130: [ParNew: 34911K->4352K(39296K), 0.0035931 secs] 34911K->12618K(126720K), 0.0038949 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]
 ```
-+ 2020-10-27T17:18:16.798+0800: 0.144 =>GC的日期、时间戳、时区
++ 2020-10-29T15:20:13.285+0800: 0.130 =>GC的日期、时间戳、时区
 + GC (Allocation Failure) => 触发GC的原因：给对象分配堆内存失败
-+ PSYoungGen => Parallel Scavenge Young Gen : 并行的新生代收集器，复制算法，吞吐量优先，会触发STW事件
-+ \[PSYoungGen: 65024K->10750K(75776K)] => 年轻代GC的内存变化：原大小75776K，已使用大小65024K，GC后大小10750K(年轻代在内存比例达到85.8%时触发了GC，腾出了65024K-10750K=54274K)
-+ 65024K->22522K(249344K) => 堆内存的变化：原大小249344K，已使用大小65024K，GC后大小22522K(整个堆内存变化大小为65024K-22522K=42502K)
-+ 0.0050200 secs => 这次年轻代GC耗费时间5.02毫秒
++ ParNew => ParNew : 并行的新生代收集器，复制算法，响应速度优先，会触发STW事件
++ \[ParNew: 34911K->4352K(39296K), 0.0035931 secs] => 年轻代GC的内存变化：原大小39296K，已使用大小34911K，GC后大小4352K(年轻代在内存比例达到88.8%时触发了GC，腾出了34911K-4352K=30559K)
++ 34911K->12618K(126720K) => 堆内存的变化：原大小126720K，已使用大小34911K，GC后大小12618K
++ 0.0038949 secs => 这次年轻代GC耗费时间3.89毫秒
 + \[Times: user=0.00 sys=0.09, real=0.00 secs] => user=0.00:CPU花费的总时间为0秒 ,sys=0.09:系统调用时间为90毫秒，real=0.00:应用暂停时间为0秒
 
 **Full GC**
 ```cmd
-2020-10-27T17:18:17.001+0800: 0.347: [Full GC (Ergonomics) [PSYoungGen: 270797K->0K(270848K)] [ParOldGen: 180536K->167653K(301056K)] 451334K->167653K(571904K), [Metaspace: 2834K->2834K(1056768K)], 0.0265678 secs] [Times: user=0.23 sys=0.02, real=0.03 secs]
+[Full GC (Allocation Failure) 2020-10-29T15:20:13.653+0800: 0.498: [CMS: 87117K->87097K(87424K), 0.0109384 secs] 125646K->125626K(126720K), [Metaspace: 2835K->2835K(1056768K)], 0.0109792 secs] [Times: user=0.02 sys=0.00, real=0.01 secs]
 ```
-+ ParOldGen => Parallel Old Gen: 并行的老年代收集器，标记清除整理算法(mark-sweep-compact)，吞吐量优先，会触发STW事件
-+ Full GC (Ergonomics) => Full GC的原因：自动选择和调优
-+ \[ParOldGen: 180536K->167653K(301056K)] => 老年代GC的内存变化：原大小301056K，已使用大小180536K，GC后大小167653K(GC后老年代的大小应该包括年轻代留下的部分和老年代剩下的部分两个部分)
-+ \[Metaspace: 2834K->2834K(1056768K)] => 元数据区没有变化
-+ 其他参数的解读与年轻代一样
++ CMS => ConcMarkSweep Old Gen: 并发的老年代收集器，标记清除算法(mark-sweep)，响应速度优先，没有明显的STW
++ 这次Full GC ,几乎没有回收多少垃圾
 
-**总 结(Parallel Scavenge+Parallel Old)**
-+ 在未指定堆内存大小的情况，系统会默认进行分配，最大堆内存为系统内存的1/4，初始化对内存为最大堆内存的1/4
-+ 1秒钟内发生了12次年轻代GC、3次Full GC
-+ 并行收集器的GC时间几乎就等于应用暂停时间
-+ 初始时老年代内存大小为0，随后老年代内存和年轻代内存逐渐增大
+**总 结(ConcMarkSweepGC)**
++ 1秒钟内发生了13次年轻代GC、16次Full GC
