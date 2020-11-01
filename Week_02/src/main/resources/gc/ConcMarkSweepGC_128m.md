@@ -203,13 +203,52 @@ CommandLine flags: -XX:InitialHeapSize=134217728 -XX:MaxHeapSize=134217728 -XX:M
 + 2020-10-29T15:20:13.285+0800: 0.130 =>GC的日期、时间戳、时区
 + GC (Allocation Failure) => 触发GC的原因：给对象分配堆内存失败
 + ParNew => ParNew : 并行的新生代收集器，复制算法，响应速度优先，会触发STW事件
-+ \[ParNew: 34911K->4352K(39296K), 0.0035931 secs] => 年轻代GC的内存变化：原大小39296K，已使用大小34911K，GC后大小4352K(年轻代在内存比例达到88.8%时触发了GC，腾出了34911K-4352K=30559K)
-+ 34911K->12618K(126720K) => 堆内存的变化：原大小126720K，已使用大小34911K，GC后大小12618K
++ \[ParNew: 34911K->4352K(39296K), 0.0035931 secs] => 年轻代GC的内存变化：原大小39296K，已使用大小34911K，GC后大小4352K(年轻代在内存比例达到88.8%时触发了GC，年轻代内存变化大小：34911K-4352K=30559K)
++ 34911K->12618K(126720K) => 堆内存的变化：原大小126720K，已使用大小34911K，GC后大小12618K(回收大小：34911K-12618K=22293K，老年代增加大小：30559K-22293K=8266K)
 + 0.0038949 secs => 这次年轻代GC耗费时间3.89毫秒
-+ \[Times: user=0.00 sys=0.09, real=0.00 secs] => user=0.00:CPU花费的总时间为0秒 ,sys=0.09:系统调用时间为90毫秒，real=0.00:应用暂停时间为0秒
++ \[Times: user=0.00 sys=0.00, real=0.00 secs] => user=0.00:CPU花费的总时间为0秒 ,sys=0.09:系统调用时间为0秒，real=0.00:应用暂停时间为0秒
+
+**CMS GC**
+```cmd
+2020-10-29T15:20:13.335+0800: 0.180: [GC (CMS Initial Mark) [1 CMS-initial-mark: 47351K(87424K)] 51847K(126720K), 0.0002359 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]
+2020-10-29T15:20:13.335+0800: 0.180: [CMS-concurrent-mark-start]
+2020-10-29T15:20:13.336+0800: 0.181: [CMS-concurrent-mark: 0.001/0.001 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] 
+2020-10-29T15:20:13.336+0800: 0.181: [CMS-concurrent-preclean-start]
+2020-10-29T15:20:13.337+0800: 0.182: [CMS-concurrent-preclean: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] 
+2020-10-29T15:20:13.337+0800: 0.182: [CMS-concurrent-abortable-preclean-start] 
+2020-10-29T15:20:13.374+0800: 0.219: [CMS-concurrent-abortable-preclean: 0.001/0.037 secs] [Times: user=0.13 sys=0.00, real=0.04 secs] 
+2020-10-29T15:20:13.374+0800: 0.219: [GC (CMS Final Remark) [YG occupancy: 5256 K (39296 K)]2020-10-29T15:20:13.374+0800: 0.219: [Rescan (parallel) , 0.0003554 secs]2020-10-29T15:20:13.374+0800: 0.219: [weak refs processing, 0.0000161 secs]2020-10-29T15:20:13.374+0800: 0.219: [class unloading, 0.0002822 secs]2020-10-29T15:20:13.375+0800: 0.220: [scrub symbol table, 0.0003002 secs]2020-10-29T15:20:13.375+0800: 0.220: [scrub string table, 0.0000865 secs][1 CMS-remark: 84129K(87424K)] 89385K(126720K), 0.0011071 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] 
+2020-10-29T15:20:13.375+0800: 0.220: [CMS-concurrent-sweep-start]
+2020-10-29T15:20:13.376+0800: 0.221: [CMS-concurrent-sweep: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] 
+2020-10-29T15:20:13.376+0800: 0.221: [CMS-concurrent-reset-start]
+2020-10-29T15:20:13.376+0800: 0.221: [CMS-concurrent-reset: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] 
+```
++ GC (CMS Initial Mark) => CMS 初始标记阶段
++ \[1 CMS-initial-mark: 47351K(87424K)] 51847K(126720K), 0.0002359 secs] =>
++ \[Times: user=0.00 sys=0.00, real=0.00 secs] => 初始标记耗时基本为0秒
++ CMS-concurrent-mark-start => 并发标记开始
++ \[CMS-concurrent-mark: 0.001/0.001 secs] \[Times: user=0.00 sys=0.00, real=0.00 secs] => 并发标记耗时1毫秒
++ CMS-concurrent-preclean-start => 并发预清理开始
++ \[CMS-concurrent-preclean: 0.000/0.000 secs] \[Times: user=0.00 sys=0.00, real=0.00 secs] => 并发预清理耗时0秒
++ CMS-concurrent-abortable-preclean-start => 并发可中止预清理开始
++ \[CMS-concurrent-abortable-preclean: 0.001/0.037 secs] \[Times: user=0.13 sys=0.00, real=0.04 secs] => 并发可中止预清理耗时37毫秒
++ \[GC (CMS Final Remark) 
++ \[YG occupancy: 5256 K (39296 K)]
++ 2020-10-29T15:20:13.374+0800: 0.219: \[Rescan (parallel) , 0.0003554 secs] => 重新并行扫描
++ 2020-10-29T15:20:13.374+0800: 0.219: \[weak refs processing, 0.0000161 secs] =>弱引用处理
++ 2020-10-29T15:20:13.374+0800: 0.219: \[class unloading, 0.0002822 secs] => 卸载类
++ 2020-10-29T15:20:13.375+0800: 0.220: \[scrub symbol table, 0.0003002 secs] =>擦除符号表
++ 2020-10-29T15:20:13.375+0800: 0.220: \[scrub string table, 0.0000865 secs] =>擦除字符表
++ \[1 CMS-remark: 84129K(87424K)] 89385K(126720K), 0.0011071 secs] 
++ \[Times: user=0.00 sys=0.00, real=0.00 secs]
++ \[CMS-concurrent-sweep-start] => 并发清除开始
++ \[CMS-concurrent-sweep: 0.000/0.000 secs] \[Times: user=0.00 sys=0.00, real=0.00 secs] => 并发清除
++ \[CMS-concurrent-reset-start] => 并发重置开始
++ \[CMS-concurrent-reset: 0.000/0.000 secs] \[Times: user=0.00 sys=0.00, real=0.00 secs] => 并发重置
 
 **Full GC**
 ```cmd
+[Full GC (Allocation Failure) 2020-10-29T15:20:13.504+0800: 0.349: [CMS2020-10-29T15:20:13.504+0800: 0.349: [CMS-concurrent-sweep: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]
 [Full GC (Allocation Failure) 2020-10-29T15:20:13.653+0800: 0.498: [CMS: 87117K->87097K(87424K), 0.0109384 secs] 125646K->125626K(126720K), [Metaspace: 2835K->2835K(1056768K)], 0.0109792 secs] [Times: user=0.02 sys=0.00, real=0.01 secs]
 ```
 + CMS => ConcMarkSweep Old Gen: 并发的老年代收集器，标记清除算法(mark-sweep)，响应速度优先，没有明显的STW
