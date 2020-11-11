@@ -1,6 +1,7 @@
 package com.mariston.weekfour;
 
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -11,19 +12,18 @@ import java.util.concurrent.Executors;
  * <p>
  * 一个简单的代码参考：
  */
-public class Homework0304 {
+public class Homework0307 {
 
-    public static void main(String[] args) throws Exception {
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
-        final CountDownLatch countDownLatch = new CountDownLatch(10);
+    public static void main(String[] args) {
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        CyclicBarrier cyclicBarrier = new CyclicBarrier(8);
+
         long start = System.currentTimeMillis();
         // 在这里创建一个线程或线程池，
         // 异步执行 下面方法
-        for (int i = 0; i < 10; i++) {
-            executorService.execute(new Calc(i * 3, countDownLatch));
+        for (int i = 0; i < 8; i++) {
+            executorService.execute(new Calc(i * 3, cyclicBarrier));
         }
-        countDownLatch.await();
-
         System.out.println("使用时间：" + (System.currentTimeMillis() - start) + " ms");
 
         // 然后退出main线程
@@ -31,14 +31,12 @@ public class Homework0304 {
     }
 
     static class Calc implements Runnable {
-
         private int input;
+        private CyclicBarrier cyclicBarrier;
 
-        private CountDownLatch countDownLatch;
-
-        public Calc(int input, CountDownLatch countDownLatch) {
+        public Calc(int input, CyclicBarrier cyclicBarrier) {
             this.input = input;
-            this.countDownLatch = countDownLatch;
+            this.cyclicBarrier = cyclicBarrier;
         }
 
         /**
@@ -61,10 +59,15 @@ public class Homework0304 {
                 }
                 // 确保  拿到result 并输出
                 System.out.printf("[%s]异步计算结果为：%d %n", Thread.currentThread().getName(), result);
-            } catch (RuntimeException e) {
+
+            } catch (Exception e) {
                 e.printStackTrace();
             } finally {
-                countDownLatch.countDown();
+                try {
+                    cyclicBarrier.await();
+                } catch (InterruptedException | BrokenBarrierException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
