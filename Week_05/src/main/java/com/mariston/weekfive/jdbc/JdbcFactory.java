@@ -1,4 +1,4 @@
-package com.mariston.weekfour.jdbc;
+package com.mariston.weekfive.jdbc;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

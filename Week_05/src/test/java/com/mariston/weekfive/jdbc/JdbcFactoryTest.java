@@ -1,16 +1,14 @@
-package com.mariston.weekfour.jdbc;
+package com.mariston.weekfive.jdbc;
 
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
-import com.mariston.weekfour.bean.User;
+import com.mariston.weekfive.bean.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.*;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class JdbcFactoryTest {
 

@@ -1,4 +1,4 @@
-package com.mariston.weekfour.bean;
+package com.mariston.weekfive.bean;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
