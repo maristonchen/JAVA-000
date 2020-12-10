@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mariston.week07.mapper.CustomerMapper">
+    <resultMap id="BaseResultMap" type="com.mariston.week07.entity.po.CustomerPo">
+        <id column="customer_id" property="customerId" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="age" property="age" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="INTEGER" typeHandler="com.mariston.week07.base.LongToTimestampHandler"/>
+    </resultMap>
+
+</mapper>

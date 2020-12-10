@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mariston.week07.mapper.OrderMapper">
+    <resultMap id="BaseResultMap" type="com.mariston.week07.entity.po.OrderPo">
+        <id column="order_id" property="orderId" jdbcType="INTEGER"/>
+        <result column="customer_id" property="customerId" jdbcType="INTEGER"/>
+        <result column="all_amount" property="allAmount" jdbcType="NUMERIC"/>
+        <result column="actual_amount" property="actualAmount" jdbcType="NUMERIC"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="pay_time" property="payTime" jdbcType="INTEGER"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="INTEGER"/>
+    </resultMap>
+</mapper>

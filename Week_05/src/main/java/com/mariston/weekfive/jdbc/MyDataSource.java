@@ -11,12 +11,11 @@ import java.sql.Connection;
  * @version 1.0.0
  * @since 2020/11/19 0:28
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MyDataSource extends DataSource {
+public class MyDataSource  {
 
     private Connection connection;
 
