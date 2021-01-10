@@ -2,6 +2,7 @@ package com.mariston.week07.controller;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mariston.week07.anno.ReadOnly;
 import com.mariston.week07.base.Result;
 import com.mariston.week07.entity.dto.CustomerDto;
 import com.mariston.week07.entity.qo.CustomerQo;
@@ -51,6 +52,7 @@ public class CustomerController {
      * @param id 主键
      * @return 单条数据
      */
+    @ReadOnly
     @GetMapping("queryById")
     @ApiOperation(value = "客户信息通过主键查询单条数据", notes = "客户信息通过主键查询单条数据")
     public Result<CustomerVo> queryById(@RequestParam("id") Serializable id) {

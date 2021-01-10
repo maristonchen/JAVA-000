@@ -5,7 +5,7 @@
         <id column="customer_id" property="customerId" jdbcType="INTEGER"/>
         <result column="name" property="name" jdbcType="VARCHAR"/>
         <result column="age" property="age" jdbcType="INTEGER"/>
-        <result column="create_time" property="createTime" jdbcType="INTEGER" typeHandler="com.mariston.week07.base.LongToTimestampHandler"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" typeHandler="com.mariston.week07.base.LongToTimestampHandler"/>
     </resultMap>
 
 </mapper>

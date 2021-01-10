@@ -1,4 +1,4 @@
-package com.mariston.week06;
+package com.mariston.six;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
